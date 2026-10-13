@@ -68,7 +68,6 @@ B --> G
 | Adaptation | Prompt engineering + RAG | |
 | Retriever | `BAAI/bge-m3` | Embeds slides and questions. |
 | Vector store | Chroma (cosine) | Top 3 slides. |
-| Pictures (free mode) | `stabilityai/sd-turbo` | One picture per scene. |
 | Video (paid mode, off by default) | Kling V3 via fal.ai + JSON2Video | |
 
 ### Data
@@ -83,13 +82,13 @@ B --> G
 
 Measured on 20 new test lectures the model had not seen.
 
-| Metric | Result | Target |
+| Metric | Result|
 |---|---|---|
-| Accuracy (human rating, divided by 5) | 0.76 | 0.90 |
-| Clarity (human rating) | 0.73 | 0.90 |
-| Safety (human rating) | 1.00 | 0.90 |
-| RAG hit rate @3 (correct slide in top 3, 20 questions) | 1.00 | 0.90 |
-| Average time to create the 4 clips | 4.5 min | not set |
+| Accuracy (human rating, divided by 5) | 0.76 |
+| Clarity (human rating) | 0.73 | 
+| Safety (human rating) | 1.00 | 
+| RAG hit rate @3 (correct slide in top 3, 20 questions) | 1.00 | 
+| Average time to create the 4 clips | 4.5 min | 
 
 ---
 
@@ -109,12 +108,9 @@ Measured on 20 new test lectures the model had not seen.
 
 | Member | Role |
 |---|---|
-| Leen Khaled | TODO |
-| Lamya Alkathery | TODO |
-| Sadeem Alshamrani | TODO |
+| Leen Khaled | Prompt engineering and evaluation |
+| Lamya Alkathery | Prompt engineering and evaluation & RAG |
+| Sadeem Alshamrani | Prompt engineering and evaluation |
 
     U --> Q
 ```
-
-- **Video generation:** Qwen3-4B writes scenes from the slide text. Kling V3 generates approximately 10-second scenes through fal.ai. JSON2Video combines these scenes into connected Shorts lasting approximately 30 seconds to 1 minute each.
-- **Question answering:** BGE-M3 embeds the student's question and searches slide embeddings in Chroma. Each chunk represents one slide. The top 3 slides provide context for Qwen3-4B, which answers with slide numbers or states that the answer is not found in the slides.
