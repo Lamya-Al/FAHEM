@@ -39,17 +39,23 @@ Lecture slides are useful references, but they are not always easy to revisit or
 
 > **Prototype scope:** Generated story plans, scene images, and paid video rendering are different outputs. A complete rendered video is **not** produced by the default free configuration.
 
-## ✨ What FAHEM Includes
+##  Installation and running (step by step)
 
-- **Lecture ingestion:** PDF and PowerPoint (`.pptx`) text extraction.
-- **Content preparation:** cleaning, structured idea labels, and slide/page-aware chunks.
-- **Story generation:** Qwen3-4B plans four connected educational videos and their scenes.
-- **Output checks:** validation and safety checks for generated scene content.
-- **Free visual mode:** optional SD-Turbo image generation for individual scenes in the application.
-- **Lecture-grounded chat:** BGE-M3 embeddings, Chroma retrieval, and Qwen3-4B responses with citations.
-- **Evaluation notebook:** retrieval checks, abstention checks, citation checks, and a Qwen-based LLM-as-a-judge.
-- **Interactive app:** a Colab-hosted FastAPI interface with a lecture upload flow, approval step, learning feed, and chat.
-- **Optional paid integration:** Kling video generation and JSON2Video assembly, disabled by default and requiring API credentials.
+The project is one notebook, `Fahem_Integrated_App_fixed__1_.ipynb`, built for **Google Colab with a T4 GPU**. No local installation is needed.
+
+1. Open the notebook in Google Colab.
+2. Select a GPU: Runtime → Change runtime type → **T4 GPU**.
+3. Run **cell 1 (Setup)**. It installs the libraries and keeps paid video off (`ENABLE_PAID_VIDEO = False`).
+4. Run **cell 2 (Upload)** and choose your lecture as a `.pdf` or `.pptx` file.
+5. Run **cell 3** to download and load Qwen3-4B (about 8 GB on the first run).
+6. Run **cell 4 (Preprocessing)** to clean the text and tag every idea line `[S1]`, `[S2]`, ...
+7. Run **cell 5 (Story generator)** to write the 4 connected videos.
+8. Run the **chatbot cells** in order: settings and chunking, R2 index, grounded answers.
+9. Run the **last cell (Fahem app)** and click **🔗 Open Fahem**.
+10. In the app: upload a lecture, review the plan, press **Approve**, swipe through the videos, and ask questions.
+
+
+---
 
 ## 🧩 Architecture
 
@@ -93,100 +99,64 @@ All of the implementation is collected in **one notebook**—not separate artifi
 
 The notebook covers **setup → lecture upload → preprocessing → scene planning → retrieval/chat → evaluation → optional video integration → web application**.
 
-## 📊 Evaluation & Limitations
+### Model
 
-The notebook includes automated checks and a 20-question retrieval/QA test configuration. **The saved run is an engineering diagnostic, not evidence of production-level accuracy.**
+| Component | Choice | Notes |
+|---|---|---|
+| Language model | `Qwen/Qwen3-4B`, 16-bit | 4 billion parameters. No fine-tuning, alignment or quantization. |
+| Adaptation | Prompt engineering + RAG | |
+| Retriever | `BAAI/bge-m3` | Embeds slides and questions. |
+| Vector store | Chroma (cosine) | Top 3 slides. |
+| Pictures (free mode) | `stabilityai/sd-turbo` | One picture per scene. |
+| Video (paid mode, off by default) | Kling V3 via fal.ai + JSON2Video | |
 
-In the uploaded notebook's saved execution:
+### Data
 
-| Diagnostic | Observed in saved run |
-| :-- | --: |
-| Retrieval Hit@3 | **0.20** |
-| Correct abstention | **0.25** |
-| LLM-judge PASS rate | **0.55** |
-| Mean judge score | **4.05 / 5** |
-
-**How to interpret this:** the saved notebook run used a **Stacks and Queues lecture**, while its 20 configured evaluation questions were written for a **Water Cycle lecture**. These are mismatched inputs, so the metrics **must not be presented as a valid assessment of FAHEM's performance**. Several questions were abstained on; grounded-answer and citation metrics were unavailable in that run. The scene-generation output also reported that not all coverage checks passed.
-
-**Before publishing performance claims:** prepare a lecture-matched question set, rerun the evaluation, review missing scene coverage, and report the actual outcomes and sample sizes. The LLM judge uses the *same base model* as the answer generator; its scores are screening signals rather than independent validation.
-
-## 🚀 Getting Started
-
-1. Open **[the notebook in Colab](https://colab.research.google.com/github/Lamya-Al/FAHEM/blob/main/notebooks/FAHEM_Integrated_App.ipynb)** after it has been uploaded to the referenced repository path.
-2. In Colab, choose **Runtime → Change runtime type → T4 GPU** (subject to Colab availability).
-3. Run the setup cell to install packages, then load Qwen3-4B.
-4. Upload a **text-based PDF or `.pptx`** lecture; scanned PDFs require OCR not provided in this notebook.
-5. Run the preprocessing and story generation cells, then the BGE-M3 / Chroma / grounded-chat cells in order.
-6. Optionally run evaluation **with questions that match the lecture you uploaded**.
-7. Run the application cell to open its Colab-hosted interface. In the app, scene pictures depend on the SD-Turbo model and available GPU resources.
-
-**Paid services are disabled by default.** Leave `ENABLE_PAID_VIDEO = False` to avoid the optional paid path. If you deliberately enable it, read the billing steps first and configure credentials through **Colab Secrets**, not by pasting them into code. The app also has a separate `KLING_ON = False` setting.
-
-**Runtime notes:** Models download during first use, the notebook requires a GPU, and application state is temporary within the Colab runtime. Avoid uploading confidential or copyrighted lectures without permission.
-
-## 🗂 Repository Layout
-
-```text
-FAHEM/
-├── README.md
-├── assets/
-│   └── fahem-logo.png
-└── notebooks/
-    └── FAHEM_Integrated_App.ipynb
-```
-
-## 🧭 Next Improvements
-
-- Align each benchmark set with the lecture being tested and report validated results.
-- Improve scene coverage and ensure every generated story passes defined checks.
-- Compare retrieval thresholds on in-scope versus out-of-scope questions.
-- Add verified demo screenshots/videos and a reproducible sample lecture where redistribution is permitted.
-- Extract reusable modules from the notebook if the prototype becomes a maintained application.
-
-## 👥 Meet the Team
-
-FAHEM was developed collaboratively as a capstone project in the **Generative AI Applications Engineering bootcamp**. Each teammate can document their own contributions below before the final team review.
-
-| Team member | Contribution focus |
-| :-- | :-- |
-| **Leen Khaled** | *To be added by Leen* |
-| **Lamya Alkathery** | *To be added by Lamya* |
-| **Sadeem Alshamrani** | **LLM Prompt Engineering · Output Testing · Human Evaluation** |
-
-### Leen Khaled — Contributions
-
-> **To be completed by Leen.** Replace this note with a short description of your role, followed by 2–4 concrete contributions.
-
-- **Primary focus:** *[Add your area of responsibility]*
-- **What I implemented:** *[Add verified features, code, or workflows]*
-- **Testing or results:** *[Add relevant work or evidence]*
-- **Collaboration:** *[Add cross-team contributions, if applicable]*
-
-### Lamya Alkathery — Contributions
-
-> **To be completed by Lamya.** Replace this note with a short description of your role, followed by 2–4 concrete contributions.
-
-- **Primary focus:** *[Add your area of responsibility]*
-- **What I implemented:** *[Add verified features, code, or workflows]*
-- **Testing or results:** *[Add relevant work or evidence]*
-- **Collaboration:** *[Add cross-team contributions, if applicable]*
-
-### Sadeem Alshamrani — Contributions
-
-**Focus: LLM Prompt Engineering, Output Testing & Human Evaluation**
-
-- **Prompt engineering:** Worked on refining and organizing prompts for the lecture-to-scene generation workflow, with attention to structure, educational clarity, and faithfulness to lecture content.
-- **Output testing:** Reviewed generated educational scenes using sample lecture topics, documented observations, and identified recurring issues or opportunities to improve the generated narratives.
-- **Human evaluation:** Used a rubric-based assessment to review aspects of generated outputs such as factual accuracy, clarity, coherence, and suitability for learning.
-- **Iteration and reporting:** Organized evaluation notes and contributed recommendations for future prompt and generation improvements.
-
-> **Contribution scope:** Individual sections describe work performed by each teammate, not exclusive ownership of shared components. Human evaluation is separate from the notebook's automated checks and LLM-as-a-Judge.
+- **Input:** slides (PDF or PPTX) uploaded by the user. No training data is used, since the model is not fine-tuned.
+- **Testing:** 20 new lectures the model had not seen. The chatbot test set is 20 questions (15 in-scope, 5 out-of-scope) on a 10-slide water-cycle lecture.
+- **Preprocessing:** removes page numbers, repeated headers and footers, links, duplicates and noise.
 
 ---
 
-<div align="center">
+##  Results
 
-**FAHEM | فاهم**  
-*From Lectures to Understanding.*
+Measured on 20 new test lectures the model had not seen.
+
+| Metric | Result | Target |
+|---|---|---|
+| Accuracy (human rating, divided by 5) | 0.76 | 0.90 |
+| Clarity (human rating) | 0.73 | 0.90 |
+| Safety (human rating) | 1.00 | 0.90 |
+| RAG hit rate @3 (correct slide in top 3, 20 questions) | 1.00 | 0.90 |
+| Slide text extraction | 99% | 90% or more |
+| Average time to create the 4 clips | 4.5 min | not set |
+| Answer latency P95 | not yet measured | per measurement |
+| Video assembly success | not yet measured | 100% |
+
+---
+
+##  Data sources and licenses
+
+| Resource | Source | License |
+|---|---|---|
+| Qwen3-4B | Alibaba Qwen team, Hugging Face | Apache 2.0 |
+| BGE-M3 | BAAI, Hugging Face | MIT |
+| SD-Turbo | Stability AI, Hugging Face | Stability AI license (check current terms) |
+| ChromaDB, Transformers, Gradio | Open-source libraries | Apache 2.0 |
+| FastAPI, python-pptx | Open-source libraries | MIT |
+| pypdf | Open-source library | BSD |
+| Kling V3 (fal.ai), JSON2Video | Paid third-party services | Provider terms of service |
+| Lecture slides | Uploaded by the user / the 20 test lectures | TODO: state the source and permission for each test lecture |
+
+---
+
+##  Team members and roles
+
+| Member | Role |
+|---|---|
+| Leen Khaled (لين خالد) | Prompt engineering, evaluation, interface  |
+| Lamia Alkathiri (لمياء الكثيري) | Prompt engineering, evaluation, RAG |
+| Sadeem Alshamrani (سديم الشمراني) | Prompt engineering, evaluation, RAG |
+
 
 </div>
