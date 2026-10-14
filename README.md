@@ -107,13 +107,12 @@ The notebook covers **setup → lecture upload → preprocessing → scene plann
 | Adaptation | Prompt engineering + RAG | |
 | Retriever | `BAAI/bge-m3` | Embeds slides and questions. |
 | Vector store | Chroma (cosine) | Top 3 slides. |
-| Pictures (free mode) | `stabilityai/sd-turbo` | One picture per scene. |
 | Video (paid mode, off by default) | Kling V3 via fal.ai + JSON2Video | |
 
 ### Data
 
 - **Input:** slides (PDF or PPTX) uploaded by the user. No training data is used, since the model is not fine-tuned.
-- **Testing:** 20 new lectures the model had not seen. The chatbot test set is 20 questions (15 in-scope, 5 out-of-scope) on a 10-slide water-cycle lecture.
+- **Testing:** 20 new lectures the model had not seen. The chatbot test set is 20 questions (15 in-scope, 5 out-of-scope) 
 - **Preprocessing:** removes page numbers, repeated headers and footers, links, duplicates and noise.
 
 ---
@@ -122,16 +121,13 @@ The notebook covers **setup → lecture upload → preprocessing → scene plann
 
 Measured on 20 new test lectures the model had not seen.
 
-| Metric | Result | Target |
+| Metric | Result | 
 |---|---|---|
-| Accuracy (human rating, divided by 5) | 0.76 | 0.90 |
-| Clarity (human rating) | 0.73 | 0.90 |
-| Safety (human rating) | 1.00 | 0.90 |
-| RAG hit rate @3 (correct slide in top 3, 20 questions) | 1.00 | 0.90 |
-| Slide text extraction | 99% | 90% or more |
-| Average time to create the 4 clips | 4.5 min | not set |
-| Answer latency P95 | not yet measured | per measurement |
-| Video assembly success | not yet measured | 100% |
+| Accuracy (human rating, divided by 5) | 0.76 |
+| Clarity (human rating) | 0.73 | 
+| Safety (human rating) | 1.00 | 
+| RAG hit rate @3 (correct slide in top 3, 20 questions) | 1.00 |
+| Average time to create the 4 clips | 4.5 min | 
 
 ---
 
@@ -143,10 +139,8 @@ Measured on 20 new test lectures the model had not seen.
 | BGE-M3 | BAAI, Hugging Face | MIT |
 | SD-Turbo | Stability AI, Hugging Face | Stability AI license (check current terms) |
 | ChromaDB, Transformers, Gradio | Open-source libraries | Apache 2.0 |
-| FastAPI, python-pptx | Open-source libraries | MIT |
-| pypdf | Open-source library | BSD |
 | Kling V3 (fal.ai), JSON2Video | Paid third-party services | Provider terms of service |
-| Lecture slides | Uploaded by the user / the 20 test lectures | TODO: state the source and permission for each test lecture |
+| Lecture slides | Uploaded by the user / the 20 test lectures |
 
 ---
 
